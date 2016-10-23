@@ -1,0 +1,150 @@
+swagger: '2.0'
+info:
+  title: Biffin API
+  description: Biffin API
+  version: "1.0.0"
+produces:
+  - application/json
+paths:
+  /map/addunit:
+    post:
+      summary: Add a unit to the current map
+      description: |
+        Insert the unit into current map and return an error if failed
+      parameters:
+        - name: unit
+          in: body
+          schema:
+            $ref: '#/definitions/Unit'
+          required: true
+          description: The new to add the map
+        - name: id
+          in: query
+          type: integer
+          format: int64
+          required: true
+          description: Identifier of the map
+      responses:
+        200:
+          description: Should return true
+          schema:
+            type: boolean
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /map:
+    get:
+      description: The MapFile endpoint returns all available maps
+      responses:
+        200:
+          description: An array of MapFile
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MapFile'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: id
+          in: query
+          format: int64
+          type: integer
+          required: false
+          description: The id of the MapFile to return
+    post:
+      summary: Create a new map
+      description: |
+        Create the new map, return the associated id, an error othewise
+      parameters:
+        - name: mapfile
+          in: body
+          schema:
+            $ref: '#/definitions/MapFile'
+          required: true
+          description: The new map yet to be created
+      responses:
+        200:
+          description: The ID of the new map
+          schema:
+              type: integer
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+definitions:
+  MapFile:
+    type: object
+    required:
+      - height
+      - width
+      - units
+      - asset_bundle
+    properties:
+      height:
+        type: integer
+        description: Height of the MapFile
+      width:
+        type: integer
+        description: Width of the MapFile
+      units:
+        type: array
+        items:
+          $ref: '#/definitions/Unit'
+      asset_bundle:
+        $ref: '#/definitions/AssetBundle'
+  Unit:
+    type: object
+    required:
+      - layer_priority
+      - pos_x
+      - pos_y
+      - asset_name
+    properties:
+      layer_priority:
+        type: integer
+        description: Lowest priority is display first
+      pos_x:
+        type: integer
+        description: Absolute position [0; height]
+      pos_y:
+        type: integer
+        description: Absolute position [0; width]
+      asset_name:
+        type: string
+
+  AssetBundle:
+    type: object
+    required:
+      - assets
+    properties:
+      assets:
+        type: array
+        items:
+          $ref: '#/definitions/Asset'
+  Asset:
+    type: object
+    required:
+      - name
+      - file_path
+    properties:
+      name:
+        type: string
+      file_path:
+        type: string
+  Error:
+    type: object
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
