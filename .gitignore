@@ -1,1 +1,3 @@
 swagger-codegen
+*.swp
+*.swo
