@@ -6,33 +6,6 @@ info:
 produces:
   - application/json
 paths:
-  /map/addunit:
-    post:
-      summary: Add a unit to the current map
-      description: |
-        Insert the unit into current map and return an error if failed
-      parameters:
-        - name: unit
-          in: body
-          schema:
-            $ref: '#/definitions/Unit'
-          required: true
-          description: The new to add the map
-        - name: id
-          in: query
-          type: integer
-          format: int64
-          required: true
-          description: Identifier of the map
-      responses:
-        200:
-          description: Should return true
-          schema:
-            type: boolean
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
   /map:
     get:
       description: The MapFile endpoint returns all available maps
@@ -78,63 +51,186 @@ paths:
 definitions:
   MapFile:
     type: object
-    required:
-      - height
-      - width
-      - units
-      - asset_bundle
     properties:
-      height:
-        type: integer
-        description: Height of the MapFile
       width:
         type: integer
-        description: Width of the MapFile
-      units:
-        type: array
-        items:
-          $ref: '#/definitions/Unit'
-      asset_bundle:
-        $ref: '#/definitions/AssetBundle'
-  Unit:
-    type: object
-    required:
-      - layer_priority
-      - pos_x
-      - pos_y
-      - asset_name
-    properties:
-      layer_priority:
+        description: Number of tile columns
+      height:
         type: integer
-        description: Lowest priority is display first
+        description: Number of tile rows
+      tilewidth:
+        type: integer
+        description: Map grid width.
+      tileheight:
+        type: integer
+        description: Map grid height.
+      orientation:
+        type: string
+        description: Orthogonal, isometric, or staggered
+      layers:
+        type: array
+        description: Array of Layers
+        items:
+          $ref: '#/definitions/Layer'
+      tilesets:
+        type: array
+        description: Array of Tilesets
+        items:
+          $ref: '#/definitions/Tileset'
+      backgroundcolor:
+        type: string
+        description: Hex-formatted color (#RRGGBB) (Optional)
+      renderorder:
+        type: string
+        description: Rendering direction (orthogonal maps only)
+      properties:
+        type: object
+        description: String key-value pairs
+      nextobjectid:
+        type: integer
+        description: Auto-increments for each placed object
+
+  Layer:
+    type: object
+    properties:
+      width:
+        type: integer
+        description: Column count. Same as map width in Tiled Qt.
+      height:
+        type: integer
+        description: Row count. Same as map height in Tiled Qt.
+      name:
+        type: string
+        description: Name assigned to this layer
+      type:
+        type: string
+        description: tilelayer, objectgroup, or imagelayer
+      visible:
+        type: boolean
+        description: Whether layer is shown or hidden in editor
       pos_x:
         type: integer
-        description: Absolute position [0; height]
+        description: Horizontal layer offset. Always 0 in Tiled Qt.
       pos_y:
         type: integer
-        description: Absolute position [0; width]
-      asset_name:
+        description: Vertical layer offset. Always 0 in Tiled Qt.
+      data:
+        type: integer
+        description: Array of GIDs. tilelayer only.
+      objects:
+        type: object
+        description: Array of Object units. objectgroup only.
+      properties:
+        type: object
+        description: string key-value pairs.
+      opacity:
+        type: number
+        description: Value between 0 and 1
+      draworder:
         type: string
+        description: topdown (default) or index. objectgroup only.
 
-  AssetBundle:
+  ObjectUnit:
     type: object
-    required:
-      - assets
     properties:
-      assets:
-        type: array
-        items:
-          $ref: '#/definitions/Asset'
-  Asset:
+      id:
+        type: integer
+        description: Incremental id - unique across all objects
+      width:
+        type: integer
+        description: Width in pixels. Ignored if using a gid.
+      height:
+        type: integer
+        description: Height in pixels. Ignored if using a gid.
+      name:
+        type: string
+        description: String assigned to name field in editor
+      type:
+        type: string
+        description: String assigned to type field in editor
+      properties:
+        type: object
+        description: String key-value pairs
+      visible:
+        type: boolean
+        description: Whether object is shown in editor.
+      pos_x:
+        type: integer
+        description: x coordinate in pixels
+      pos_y:
+        type: integer
+        description: y coordinate in pixels
+      rotation:
+        type: number
+        description: Angle in degrees clockwise
+      gid:
+        type: integer
+        description: GID, only if object comes from a Tilemap
+
+  Tileset:
     type: object
-    required:
-      - name
-      - file_path
+    properties:
+      firstgid:
+        type: integer
+        description: GID corresponding to the first tile in the set
+      image:
+        type: string
+        description: Image used for tiles in this set
+      name:
+        type: string
+        description: Name given to this tileset
+      tilewidth:
+        type: integer
+        description: Maximum width of tiles in this set
+      tileheight:
+        type: integer
+        description: Maximum height of tiles in this set
+      imagewidth:
+        type: integer
+        description: Width of source image in pixels
+      imageheight:
+        type: integer
+        description: Height of source image in pixels
+      properties:
+        type: object
+        description: String key-value pairs
+      margin:
+        type: integer
+        description: Buffer between image edge and first tile (pixels)
+      spacing:
+        type: integer
+        description: Spacing between adjacent tiles in image (pixels)
+      tileproperties:
+        type: object
+        description: Per-tile properties, indexed by gid as string
+      terrains:
+        type: array
+        description: Array of Terrains (optional)
+        items:
+          $ref: '#/definitions/Tileset'
+      tiles:
+        type: object
+        description: Gid-indexed Tiles (optional)
+
+  Tiles:
+    type: object
+    properties:
+      terrain:
+        type: array
+        description: index of terrain for each corner of tile
+        items:
+          type: integer
+
+  Terrain:
+    type: object
     properties:
       name:
         type: string
-      file_path:
-        type: string
+        description: Name of terrain
+      tile:
+        type: integer
+        description: Local ID of tile representing terrain
+
   Error:
     type: object
     required:
