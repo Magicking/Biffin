@@ -34,13 +34,13 @@ func configureFlags(api *operations.BiffinAPI) {
 }
 
 var ethopts struct {
-	WsURI string `long:"ws-uri" description:"Ethereum WS URI (e.g: ws://HOST:8546)"`
-	PrivateKey string `long:"pkey" description:"hex encoded private key"`
-	ContractAddr string `long:"addr" description:"Contract addr (default create a new)"`
+	WsURI string `long:"ws-uri" env:"WS_URI" description:"Ethereum WS URI (e.g: ws://HOST:8546)"`
+	PrivateKey string `long:"pkey" env:"PRIVATE_KEY" description:"hex encoded private key"`
+	ContractAddr string `long:"addr" env:"ADDR" description:"Contract addr (default create a new)"`
 }
 
 var serviceopts struct {
-	DbDSN string `long:"db-dsn" description:"Database DSN (e.g: /tmp/test.sqlite)"`
+	DbDSN string `long:"db-dsn" env:"DB_DSN" description:"Database DSN (e.g: /tmp/test.sqlite)"`
 }
 
 func configureAPI(api *operations.BiffinAPI) http.Handler {
@@ -71,7 +71,7 @@ func configureAPI(api *operations.BiffinAPI) http.Handler {
 		return internal.GetMap(ctx, params)
 	})
 	api.PostMapHandler = operations.PostMapHandlerFunc(func(params operations.PostMapParams) middleware.Responder {
-		return middleware.NotImplemented("operation .PostMap has not yet been implemented")
+		return internal.PostMap(ctx, params)
 	})
 
 	api.ServerShutdown = func() {}

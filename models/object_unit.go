@@ -25,12 +25,6 @@ type ObjectUnit struct {
 	// String assigned to name field in editor
 	Name string `json:"name,omitempty"`
 
-	// x coordinate in pixels
-	PosX int64 `json:"pos_x,omitempty"`
-
-	// y coordinate in pixels
-	PosY int64 `json:"pos_y,omitempty"`
-
 	// String key-value pairs
 	Properties interface{} `json:"properties,omitempty"`
 
@@ -45,6 +39,12 @@ type ObjectUnit struct {
 
 	// Width in pixels. Ignored if using a gid.
 	Width int64 `json:"width,omitempty"`
+
+	// x coordinate in pixels
+	X int64 `json:"x,omitempty"`
+
+	// y coordinate in pixels
+	Y int64 `json:"y,omitempty"`
 }
 
 // Validate validates this object unit

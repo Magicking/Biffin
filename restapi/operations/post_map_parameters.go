@@ -34,7 +34,7 @@ type PostMapParams struct {
 	  Required: true
 	  In: body
 	*/
-	Mapfile *models.MapFile
+	MapFile *models.MapFile
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -48,9 +48,9 @@ func (o *PostMapParams) BindRequest(r *http.Request, route *middleware.MatchedRo
 		var body models.MapFile
 		if err := route.Consumer.Consume(r.Body, &body); err != nil {
 			if err == io.EOF {
-				res = append(res, errors.Required("mapfile", "body"))
+				res = append(res, errors.Required("mapFile", "body"))
 			} else {
-				res = append(res, errors.NewParseError("mapfile", "body", "", err))
+				res = append(res, errors.NewParseError("mapFile", "body", "", err))
 			}
 
 		} else {
@@ -59,12 +59,12 @@ func (o *PostMapParams) BindRequest(r *http.Request, route *middleware.MatchedRo
 			}
 
 			if len(res) == 0 {
-				o.Mapfile = &body
+				o.MapFile = &body
 			}
 		}
 
 	} else {
-		res = append(res, errors.Required("mapfile", "body"))
+		res = append(res, errors.Required("mapFile", "body"))
 	}
 
 	if len(res) > 0 {

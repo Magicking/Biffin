@@ -5,6 +5,8 @@ info:
   version: "1.0.0"
 produces:
   - application/json
+consumes:
+  - application/json
 paths:
   /map:
     get:
@@ -32,7 +34,7 @@ paths:
       description: |
         Create the new map, return the associated id, an error othewise
       parameters:
-        - name: mapfile
+        - name: map_file
           in: body
           schema:
             $ref: '#/definitions/MapFile'
@@ -108,18 +110,22 @@ definitions:
       visible:
         type: boolean
         description: Whether layer is shown or hidden in editor
-      pos_x:
+      x:
         type: integer
         description: Horizontal layer offset. Always 0 in Tiled Qt.
-      pos_y:
+      'y':
         type: integer
         description: Vertical layer offset. Always 0 in Tiled Qt.
       data:
-        type: integer
+        type: array
         description: Array of GIDs. tilelayer only.
+        items:
+          type: integer
       objects:
-        type: object
+        type: array
         description: Array of Object units. objectgroup only.
+        items:
+          $ref: '#/definitions/ObjectUnit'
       properties:
         type: object
         description: string key-value pairs.
@@ -154,10 +160,10 @@ definitions:
       visible:
         type: boolean
         description: Whether object is shown in editor.
-      pos_x:
+      x:
         type: integer
         description: x coordinate in pixels
-      pos_y:
+      'y':
         type: integer
         description: y coordinate in pixels
       rotation:

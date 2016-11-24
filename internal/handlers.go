@@ -17,3 +17,12 @@ func GetMap(ctx *Context, params op.GetMapParams) middleware.Responder {
 
 	return ret.WithPayload(map_files)
 }
+
+func PostMap(ctx *Context, params op.PostMapParams) middleware.Responder {
+	err := InsertMapFile(ctx, params.MapFile)
+	if err != nil {
+		log.Println(err)
+		return op.NewPostMapDefault(500)
+	}
+	return op.NewPostMapOK()
+}

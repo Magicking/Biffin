@@ -5,6 +5,7 @@ package models
 
 import (
 	strfmt "github.com/go-openapi/strfmt"
+	"github.com/go-openapi/swag"
 
 	"github.com/go-openapi/errors"
 )
@@ -14,7 +15,7 @@ import (
 type Layer struct {
 
 	// Array of GIDs. tilelayer only.
-	Data int64 `json:"data,omitempty"`
+	Data []int64 `json:"data"`
 
 	// topdown (default) or index. objectgroup only.
 	Draworder string `json:"draworder,omitempty"`
@@ -26,16 +27,10 @@ type Layer struct {
 	Name string `json:"name,omitempty"`
 
 	// Array of Object units. objectgroup only.
-	Objects interface{} `json:"objects,omitempty"`
+	Objects []*ObjectUnit `json:"objects"`
 
 	// Value between 0 and 1
 	Opacity float64 `json:"opacity,omitempty"`
-
-	// Horizontal layer offset. Always 0 in Tiled Qt.
-	PosX int64 `json:"pos_x,omitempty"`
-
-	// Vertical layer offset. Always 0 in Tiled Qt.
-	PosY int64 `json:"pos_y,omitempty"`
 
 	// string key-value pairs.
 	Properties interface{} `json:"properties,omitempty"`
@@ -48,14 +43,63 @@ type Layer struct {
 
 	// Column count. Same as map width in Tiled Qt.
 	Width int64 `json:"width,omitempty"`
+
+	// Horizontal layer offset. Always 0 in Tiled Qt.
+	X int64 `json:"x,omitempty"`
+
+	// Vertical layer offset. Always 0 in Tiled Qt.
+	Y int64 `json:"y,omitempty"`
 }
 
 // Validate validates this layer
 func (m *Layer) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateData(formats); err != nil {
+		// prop
+		res = append(res, err)
+	}
+
+	if err := m.validateObjects(formats); err != nil {
+		// prop
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *Layer) validateData(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.Data) { // not required
+		return nil
+	}
+
+	return nil
+}
+
+func (m *Layer) validateObjects(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.Objects) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.Objects); i++ {
+
+		if swag.IsZero(m.Objects[i]) { // not required
+			continue
+		}
+
+		if m.Objects[i] != nil {
+
+			if err := m.Objects[i].Validate(formats); err != nil {
+				return err
+			}
+		}
+
+	}
+
 	return nil
 }

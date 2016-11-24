@@ -6,22 +6,32 @@ import (
 
 	"biffin/models"
 	"fmt"
+	"encoding/json"
 )
 
 type MapFileDb struct {
 	gorm.Model
-	Obj *models.MapFile
+	Height int64
+	Width int64
+	JsonObj []byte
 }
 
 func InsertMapFile(ctx *Context, map_file *models.MapFile) error {
-	_map_file := MapFileDb{Obj: map_file}
-
-	if err := ctx.Db.Create(&_map_file).Error; err != nil {
+	jsonObj, err := json.Marshal(map_file)
+	if err != nil {
 		return err
 	}
+	map_file_db := MapFileDb{
+		Height: map_file.Height,
+		Width: map_file.Width,
+		JsonObj: jsonObj}
 
+	if err := ctx.Db.Create(&map_file_db).Error; err != nil {
+		return err
+	}
 	return nil
 }
+
 func GetAllMapFile(ctx *Context) ([]*models.MapFile, error) {
 	var _map_files []MapFileDb
 
@@ -31,7 +41,12 @@ func GetAllMapFile(ctx *Context) ([]*models.MapFile, error) {
 
 	ret := make([]*models.MapFile, len(_map_files))
 	for i, element := range _map_files {
-		ret[i] = element.Obj
+		tmp := models.MapFile{}
+		err := json.Unmarshal(element.JsonObj, &tmp)
+		if err != nil {
+			return nil, err
+		}
+		ret[i] = &tmp
 	}
 	return ret, nil
 }
