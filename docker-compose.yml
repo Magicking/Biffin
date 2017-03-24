@@ -3,38 +3,8 @@ services:
   biffin:
     build: .
     ports:
-      - "8090"
-    volumes:
-      - ethvol:/root/eth
+      - "0.0.0.0:8090:8090"
     environment:
-      - WS_URI=ws://geth:8546
+      - WS_URI=ws://HOST:PORT/longurl
       - PRIVATE_KEY=7c23f7cc6cd849f7731b9741c26c452ac1b0984453e296799d982b06d57757ea
       - DB_DSN=/tmp/db.sqlite
-
-  utils:
-    build: ether-swarm/utils
-    environment:
-      - ENV_FILE=/root/eth/ENV.sh
-      - GG_PATH_PKEYS=/root/eth/keys
-      - GG_PATH_GENESIS=/root/eth/genesis.json
-    volumes:
-      - ethvol:/root/eth
-
-  geth:
-    build: ether-swarm/ethereum
-    ports:
-      - "8080"
-      - "8545"
-      - "8546"
-      - "30303"
-    volumes:
-      - ethvol:/root/eth
-    environment:
-      - DATA_DIR=/root/eth/datadir
-      - ENV_FILE=/root/eth/ENV.sh
-      - ACCOUNT_PASSWORD=deadbeef
-      - GG_PATH_PKEYS=/root/eth/keys
-      - GG_PATH_GENESIS=/root/eth/genesis.json
-
-volumes:
-  ethvol: {}
