@@ -1,6 +1,3 @@
-[submodule "docker"]
-	path = ether-swarm
-	url = https://github.com/Magicking/ether-swarm.git
 [submodule "vendor/github.com/PuerkitoBio/purell"]
 	path = vendor/github.com/PuerkitoBio/purell
 	url = https://github.com/PuerkitoBio/purell
