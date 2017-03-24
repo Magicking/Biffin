@@ -8,10 +8,11 @@ import (
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
+	graceful "github.com/tylerb/graceful"
 	swag "github.com/go-openapi/swag"
 
-	"biffin/restapi/operations"
-	"biffin/internal"
+	"github.com/Magicking/Biffin/restapi/operations"
+	"github.com/Magicking/Biffin/internal"
 	"github.com/rs/cors"
 )
 
@@ -34,9 +35,8 @@ func configureFlags(api *operations.BiffinAPI) {
 }
 
 var ethopts struct {
-	WsURI string `long:"ws-uri" env:"WS_URI" description:"Ethereum WS URI (e.g: ws://HOST:8546)"`
+	RawURL string `long:"ws-uri" env:"WS_URI" description:"Ethereum WS URI (e.g: ws://HOST:8546)"`
 	PrivateKey string `long:"pkey" env:"PRIVATE_KEY" description:"hex encoded private key"`
-	ContractAddr string `long:"addr" env:"ADDR" description:"Contract addr (default create a new)"`
 }
 
 var serviceopts struct {
@@ -45,16 +45,15 @@ var serviceopts struct {
 
 func configureAPI(api *operations.BiffinAPI) http.Handler {
 	// configure the api here
-	ctx, err := internal.InitContext(ethopts.WsURI, ethopts.PrivateKey, ethopts.ContractAddr)
+	ctx, err := internal.InitContext(ethopts.RawURL, ethopts.PrivateKey)
 	if err != nil {
 		log.Fatalf("Failed to initialize connection to ethereum node: %v", err)
 	}
-	ctx.Db, err = internal.InitDatabase(serviceopts.DbDSN)
+	ctx.DB, err = internal.InitDatabase(serviceopts.DbDSN)
 	if err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
 
-	go internal.Watcher(ctx)
 	api.ServeError = errors.ServeError
 
 	// Set your custom logger if needed. Default one is log.Printf
@@ -82,6 +81,13 @@ func configureAPI(api *operations.BiffinAPI) http.Handler {
 // The TLS configuration before HTTPS server starts.
 func configureTLS(tlsConfig *tls.Config) {
 	// Make all necessary changes to the TLS configuration here.
+}
+
+// As soon as server is initialized but not run yet, this function will be called.
+// If you need to modify a config, store server instance to stop it individually later, this is the place.
+// This function can be called multiple times, depending on the number of serving schemes.
+// scheme value will be set accordingly: "http", "https" or "unix"
+func configureServer(s *graceful.Server, scheme string) {
 }
 
 // The middleware configuration is for the handler executors. These do not apply to the swagger.json document.

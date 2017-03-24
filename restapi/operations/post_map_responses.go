@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	"biffin/models"
+	"github.com/Magicking/Biffin/models"
 )
 
 /*PostMapOK The ID of the new map
@@ -17,7 +17,9 @@ swagger:response postMapOK
 */
 type PostMapOK struct {
 
-	// In: body
+	/*
+	  In: Body
+	*/
 	Payload int64 `json:"body,omitempty"`
 }
 
@@ -41,7 +43,8 @@ func (o *PostMapOK) SetPayload(payload int64) {
 func (o *PostMapOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
-	if err := producer.Produce(rw, o.Payload); err != nil {
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
 		panic(err) // let the recovery middleware deal with this
 	}
 
@@ -54,7 +57,9 @@ swagger:response postMapDefault
 type PostMapDefault struct {
 	_statusCode int
 
-	// In: body
+	/*
+	  In: Body
+	*/
 	Payload *models.Error `json:"body,omitempty"`
 }
 
@@ -96,7 +101,8 @@ func (o *PostMapDefault) WriteResponse(rw http.ResponseWriter, producer runtime.
 
 	rw.WriteHeader(o._statusCode)
 	if o.Payload != nil {
-		if err := producer.Produce(rw, o.Payload); err != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
 			panic(err) // let the recovery middleware deal with this
 		}
 	}

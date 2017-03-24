@@ -3,7 +3,7 @@ package internal
 import (
 	middleware "github.com/go-openapi/runtime/middleware"
 
-	op "biffin/restapi/operations"
+	op "github.com/Magicking/Biffin/restapi/operations"
 	"log"
 )
 

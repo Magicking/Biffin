@@ -8,17 +8,19 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	"biffin/models"
+	"github.com/Magicking/Biffin/models"
 )
 
-/*GetMapOK An array of MapFile
+/*GetMapOK An array of MapFile2
 
 swagger:response getMapOK
 */
 type GetMapOK struct {
 
-	// In: body
-	Payload []*models.MapFile `json:"body,omitempty"`
+	/*
+	  In: Body
+	*/
+	Payload []*models.MapFile2 `json:"body,omitempty"`
 }
 
 // NewGetMapOK creates GetMapOK with default headers values
@@ -27,13 +29,13 @@ func NewGetMapOK() *GetMapOK {
 }
 
 // WithPayload adds the payload to the get map o k response
-func (o *GetMapOK) WithPayload(payload []*models.MapFile) *GetMapOK {
+func (o *GetMapOK) WithPayload(payload []*models.MapFile2) *GetMapOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the get map o k response
-func (o *GetMapOK) SetPayload(payload []*models.MapFile) {
+func (o *GetMapOK) SetPayload(payload []*models.MapFile2) {
 	o.Payload = payload
 }
 
@@ -41,7 +43,12 @@ func (o *GetMapOK) SetPayload(payload []*models.MapFile) {
 func (o *GetMapOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
-	if err := producer.Produce(rw, o.Payload); err != nil {
+	payload := o.Payload
+	if payload == nil {
+		payload = make([]*models.MapFile2, 0, 50)
+	}
+
+	if err := producer.Produce(rw, payload); err != nil {
 		panic(err) // let the recovery middleware deal with this
 	}
 
@@ -54,7 +61,9 @@ swagger:response getMapDefault
 type GetMapDefault struct {
 	_statusCode int
 
-	// In: body
+	/*
+	  In: Body
+	*/
 	Payload *models.Error `json:"body,omitempty"`
 }
 
@@ -96,7 +105,8 @@ func (o *GetMapDefault) WriteResponse(rw http.ResponseWriter, producer runtime.P
 
 	rw.WriteHeader(o._statusCode)
 	if o.Payload != nil {
-		if err := producer.Produce(rw, o.Payload); err != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
 			panic(err) // let the recovery middleware deal with this
 		}
 	}

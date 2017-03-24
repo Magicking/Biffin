@@ -11,7 +11,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
-	"biffin/models"
+	"github.com/Magicking/Biffin/models"
 )
 
 // NewPostMapParams creates a new PostMapParams object
@@ -34,7 +34,7 @@ type PostMapParams struct {
 	  Required: true
 	  In: body
 	*/
-	MapFile *models.MapFile
+	MapFile *models.MapFile2
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -45,7 +45,7 @@ func (o *PostMapParams) BindRequest(r *http.Request, route *middleware.MatchedRo
 
 	if runtime.HasBody(r) {
 		defer r.Body.Close()
-		var body models.MapFile
+		var body models.MapFile2
 		if err := route.Consumer.Consume(r.Body, &body); err != nil {
 			if err == io.EOF {
 				res = append(res, errors.Required("mapFile", "body"))

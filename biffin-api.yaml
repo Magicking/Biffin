@@ -13,11 +13,11 @@ paths:
       description: The MapFile endpoint returns all available maps
       responses:
         200:
-          description: An array of MapFile
+          description: An array of MapFile2
           schema:
             type: array
             items:
-              $ref: '#/definitions/MapFile'
+              $ref: '#/definitions/MapFile2'
         default:
           description: Unexpected error
           schema:
@@ -37,7 +37,7 @@ paths:
         - name: map_file
           in: body
           schema:
-            $ref: '#/definitions/MapFile'
+            $ref: '#/definitions/MapFile2'
           required: true
           description: The new map yet to be created
       responses:
@@ -236,6 +236,34 @@ definitions:
       tile:
         type: integer
         description: Local ID of tile representing terrain
+
+  MapFile2:
+    type: object
+    properties:
+      width:
+        type: integer
+        description: Width in pixels. Ignored if using a gid.
+      height:
+        type: integer
+        description: Height in pixels. Ignored if using a gid.
+      units:
+        description: Units of the game
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/GameUnit'
+  GameUnit:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of unit
+      'x':
+        type: integer
+        description: X position
+      'y':
+        type: integer
+        description: Y position
 
   Error:
     type: object

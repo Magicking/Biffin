@@ -4,7 +4,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
-	"biffin/models"
+	"github.com/Magicking/Biffin/models"
 	"fmt"
 	"encoding/json"
 )
@@ -16,7 +16,7 @@ type MapFileDb struct {
 	JsonObj []byte
 }
 
-func InsertMapFile(ctx *Context, map_file *models.MapFile) error {
+func InsertMapFile(ctx *Context, map_file *models.MapFile2) error {
 	jsonObj, err := json.Marshal(map_file)
 	if err != nil {
 		return err
@@ -26,22 +26,22 @@ func InsertMapFile(ctx *Context, map_file *models.MapFile) error {
 		Width: map_file.Width,
 		JsonObj: jsonObj}
 
-	if err := ctx.Db.Create(&map_file_db).Error; err != nil {
+	if err := ctx.DB.Create(&map_file_db).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func GetAllMapFile(ctx *Context) ([]*models.MapFile, error) {
+func GetAllMapFile(ctx *Context) ([]*models.MapFile2, error) {
 	var _map_files []MapFileDb
 
-	if ctx.Db.Find(&_map_files).RecordNotFound() {
+	if ctx.DB.Find(&_map_files).RecordNotFound() {
 		return nil, fmt.Errorf("RecordNotFound: No map file in database")
 	}
 
-	ret := make([]*models.MapFile, len(_map_files))
+	ret := make([]*models.MapFile2, len(_map_files))
 	for i, element := range _map_files {
-		tmp := models.MapFile{}
+		tmp := models.MapFile2{}
 		err := json.Unmarshal(element.JsonObj, &tmp)
 		if err != nil {
 			return nil, err
