@@ -5,6 +5,13 @@ services:
     ports:
       - "0.0.0.0:8090:8090"
     environment:
-      - WS_URI=ws://HOST:PORT/longurl
-      - PRIVATE_KEY=7c23f7cc6cd849f7731b9741c26c452ac1b0984453e296799d982b06d57757ea
-      - DB_DSN=/tmp/db.sqlite
+      - DB_DSN=host=postgres user=f3b1be969686afb4520ce dbname=biffin sslmode=disable password=839169c0ea5e59146a
+    links:
+      - postgres
+
+  postgres:
+    image: postgres:9.5
+    environment:
+      - POSTGRES_USER=f3b1be969686afb4520ce
+      - POSTGRES_PASSWORD=839169c0ea5e59146a
+      - POSTGRES_DB=biffin

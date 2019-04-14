@@ -1,13 +1,16 @@
 package internal
 
 import (
+	"context"
+
 	middleware "github.com/go-openapi/runtime/middleware"
 
-	op "github.com/Magicking/Biffin/restapi/operations"
 	"log"
+
+	op "github.com/Magicking/Biffin/restapi/operations"
 )
 
-func GetMap(ctx *Context, params op.GetMapParams) middleware.Responder {
+func GetMap(ctx context.Context, params op.GetMapParams) middleware.Responder {
 	map_files, err := GetAllMapFile(ctx)
 	if err != nil {
 		log.Println(err)
@@ -18,7 +21,7 @@ func GetMap(ctx *Context, params op.GetMapParams) middleware.Responder {
 	return ret.WithPayload(map_files)
 }
 
-func PostMap(ctx *Context, params op.PostMapParams) middleware.Responder {
+func PostMap(ctx context.Context, params op.PostMapParams) middleware.Responder {
 	err := InsertMapFile(ctx, params.MapFile)
 	if err != nil {
 		log.Println(err)

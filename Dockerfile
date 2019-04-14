@@ -3,8 +3,6 @@ MAINTAINER Sylvain Laurent
 
 ENV GOBIN $GOPATH/bin
 
-RUN go get -v github.com/ethereum/go-ethereum
-
 ADD vendor /go/src/github.com/Magicking/Biffin/vendor
 ADD cmd /go/src/github.com/Magicking/Biffin/cmd
 ADD models /go/src/github.com/Magicking/Biffin/models

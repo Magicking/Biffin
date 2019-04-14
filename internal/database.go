@@ -1,41 +1,48 @@
 package internal
 
 import (
+	"context"
+	"log"
+	"time"
+
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+
+	"encoding/json"
+	"fmt"
 
 	"github.com/Magicking/Biffin/models"
-	"fmt"
-	"encoding/json"
 )
 
 type MapFileDb struct {
 	gorm.Model
-	Height int64
-	Width int64
+	Height  int64
+	Width   int64
 	JsonObj []byte
 }
 
-func InsertMapFile(ctx *Context, map_file *models.MapFile2) error {
+func InsertMapFile(ctx context.Context, map_file *models.MapFile2) error {
+	DB := DBFromContext(ctx)
 	jsonObj, err := json.Marshal(map_file)
 	if err != nil {
 		return err
 	}
 	map_file_db := MapFileDb{
-		Height: map_file.Height,
-		Width: map_file.Width,
+		Height:  map_file.Height,
+		Width:   map_file.Width,
 		JsonObj: jsonObj}
 
-	if err := ctx.DB.Create(&map_file_db).Error; err != nil {
+	if err := DB.Create(&map_file_db).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func GetAllMapFile(ctx *Context) ([]*models.MapFile2, error) {
+func GetAllMapFile(ctx context.Context) ([]*models.MapFile2, error) {
+	DB := DBFromContext(ctx)
 	var _map_files []MapFileDb
 
-	if ctx.DB.Find(&_map_files).RecordNotFound() {
+	if DB.Find(&_map_files).RecordNotFound() {
 		return nil, fmt.Errorf("RecordNotFound: No map file in database")
 	}
 
@@ -52,7 +59,19 @@ func GetAllMapFile(ctx *Context) ([]*models.MapFile2, error) {
 }
 
 func InitDatabase(dbDsn string) (*gorm.DB, error) {
-	db, err := gorm.Open("sqlite3", dbDsn)
+	var err error
+	var db *gorm.DB
+
+	for i := 1; i < 10; i++ {
+		db, err = gorm.Open("postgres", dbDsn)
+		if err == nil || i == 10 {
+			break
+		}
+		sleep := (2 << uint(i)) * time.Second
+		log.Printf("Could not connect to DB: %v", err)
+		log.Printf("Waiting %v before retry", sleep)
+		time.Sleep(sleep)
+	}
 	if err != nil {
 		return nil, err
 	}

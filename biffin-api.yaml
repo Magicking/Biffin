@@ -248,10 +248,38 @@ definitions:
         description: Height in pixels. Ignored if using a gid.
       units:
         description: Units of the game
-        schema:
-          type: array
-          items:
-            $ref: '#/definitions/GameUnit'
+        type: array
+        items:
+          $ref: '#/definitions/GameUnit'
+      TerrainLayer:
+        description: Terrain units
+        type: array
+        items:
+          $ref: '#/definitions/BaseUnit'
+      ObjectLayer:
+        description: Object elements
+        type: array
+        items:
+          $ref: '#/definitions/BaseUnit'
+      BuildingLayer:
+        description: Building elements
+        type: array
+        items:
+          $ref: '#/definitions/BaseUnit'
+
+  BaseUnit:
+    type: object
+    properties:
+      index:
+        type: integer
+        description:  Index
+      'x':
+        type: integer
+        description: X position
+      'y':
+        type: integer
+        description: Y position
+
   GameUnit:
     type: object
     properties:
